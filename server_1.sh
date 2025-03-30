@@ -62,6 +62,7 @@ echo "WireGuard is running. Press Ctrl+C to stop."
 
 
 # Generate and print client configuration
+mkdir -p server_config
 WIREGUARD_CONFIG="server_config/wg0.conf"
 
 cat > $WIREGUARD_CONFIG << EOF
