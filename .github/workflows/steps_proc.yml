@@ -37,20 +37,22 @@ jobs:
     - uses: actions/checkout@v4
     - name: Wait for artifact
       run: |
+        mkdir -p downloads
+        cd downloads
         echo "Waiting for artifact"
-        while [ ! -f test.html ]; do
-          gh run download ${GITHUB_RUN_ID} -n test.html || true
+        while [ ! -f test-artifact ]; do
+          gh run download ${GITHUB_RUN_ID} -n test-artifact || true
           echo "Waiting for artifact"
         done
         echo "Artifact downloaded"
         ls -l .
-        cat test.html
+        cat test-artifact
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Download artifact with action
       uses: actions/download-artifact@v4
       with:
-        name: test.html
+        name: test-artifact
         path: foo
 
   writer:
@@ -61,9 +63,9 @@ jobs:
     - uses: actions/checkout@v4
     - name: Create artifact
       run: |
-        echo "Hello, World!" > test.html
+        echo "Hello, World!" > test-artifact
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: test.html
-        path: test.html
+        name: test-artifact
+        path: test-artifact
