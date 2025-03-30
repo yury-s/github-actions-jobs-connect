@@ -1,0 +1,25 @@
+name: PubSub jobs
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [ main ]
+  # pull_request:
+  #   branches: [ main ]
+jobs:
+  client:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Start server
+      run: |
+        echo "Starting HTTP server"
+        npx -y http-server . &
+
+    - name: Download file from server
+      run: |
+        until curl -sSf http://localhost:8080 >/dev/null; do
+          sleep 0.2
+        done
+        curl http://localhost:8080/test.html

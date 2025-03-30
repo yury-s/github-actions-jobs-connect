@@ -1,0 +1,61 @@
+name: PubSub jobs
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [ main ]
+  # pull_request:
+  #   branches: [ main ]
+jobs:
+  client:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install packages
+      run: |
+      env:
+        GH_TOKEN: ${{ github.token }}
+
+    - name: Download artifact
+      run: |
+        mkdir -p artifacts
+        gh run download --name your-artifact-name --dir artifacts
+      env:
+        GH_TOKEN: ${{ github.token }}
+
+    # - uses: actions/setup-node@v3
+    #   with:
+    #     node-version: 18
+
+
+  merge-reports:
+    if: always()
+    needs: [playwright-tests]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - name: Install dependencies
+      run: npm ci
+      env:
+        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+
+    - name: Download Blob Reports from Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: all-blob-reports
+        pattern: manual-blob-report-*
+        merge-multiple: true
+
+    - name: Merge into HTML Report
+      run: |
+        npx playwright merge-reports --reporter html ./all-blob-reports
+
+    - name: Upload HTML report
+      uses: actions/upload-artifact@v4
+      with:
+        name: html-report-manual-${{ github.run_attempt }}
+        path: playwright-report
