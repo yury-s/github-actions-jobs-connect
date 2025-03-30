@@ -47,6 +47,11 @@ jobs:
         cat test.html
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download artifact with action
+      uses: actions/download-artifact@v4
+      with:
+        name: test.html
+        path: foo
 
   writer:
     strategy:
