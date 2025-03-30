@@ -45,6 +45,8 @@ jobs:
         echo "Artifact downloaded"
         ls -l .
         cat test.html
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   writer:
     strategy:
