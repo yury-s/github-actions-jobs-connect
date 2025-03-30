@@ -3,10 +3,10 @@
 # Exit on any error
 set -e
 
-if [ ! -f client_config/CLIENT_IP_PORT ]; do
+if [ ! -f client_config/CLIENT_IP_PORT ]; then
     echo "client_config/CLIENT_IP_PORT does not exist!"
     exit 1
-done
+fi
 
 source client_config/CLIENT_IP_PORT
 rm -f client_config/CLIENT_IP_PORT
