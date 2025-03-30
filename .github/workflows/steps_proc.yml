@@ -1,4 +1,4 @@
-name: PubSub jobs
+name: Web Server and Client steps
 on:
   workflow_dispatch:
   # push:
