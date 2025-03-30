@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "Current interfaces:"
+ip a
+
 echo "Connecting to the server..."
 wg-quick up server_config/wg0.conf
 

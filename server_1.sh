@@ -21,6 +21,11 @@ if ! command -v wireguard &> /dev/null || ! command -v stun-client &> /dev/null 
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends wireguard openssh-server stun-client nmap netcat-openbsd iproute2
 fi
 
+echo
+echo "Current interfaces:"
+ip a
+echo
+
 # Use STUN to detect server's external IP and port mapping
 echo "Detecting server's external IP and port mapping..."
 STUN_OUTPUT=$(stun -v stun.l.google.com:19302 -p 443 1 2>&1)

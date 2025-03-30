@@ -13,6 +13,11 @@ if [[ ! "$STUN" ]]; then
   exit 3
 fi
 
+echo
+echo "Current interfaces:"
+ip a
+echo
+
 # Choose random local source port from 20000-30000 range.
 # Linux/Android default local port range is 32768-60999,
 # Windows and macOS is 49152-65535.
