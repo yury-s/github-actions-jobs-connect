@@ -15,21 +15,18 @@ jobs:
     - name: Install packages, learn IP, create client config
       run: |
         sudo ./client_1.sh
-
     - name: Upload client config
       uses: actions/upload-artifact@v4
       with:
         name: client_config
         path: client_config
-
     - name: Wait for server config
       run: |
-        while ! gh run download ${GITHUB_RUN_ID} -n server_config; do
+        while ! gh run download ${GITHUB_RUN_ID} -n server_config -D server_config; do
           sleep 1
         done
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Connect to server
       run: |
         ./client_2.sh
@@ -38,25 +35,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-
     - name: Wait for client config
       run: |
-        while ! gh run download ${GITHUB_RUN_ID} -n client_config; do
+        while ! gh run download ${GITHUB_RUN_ID} -n client_config -D client_config; do
           sleep 1
         done
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Bring up server wireguard
       run: |
         sudo ./server_1.sh
-
     - name: Upload server config
       uses: actions/upload-artifact@v4
       with:
         name: server_config
         path: server_config
-
     - name: Start server
       run: |
         npx -y http-server .
