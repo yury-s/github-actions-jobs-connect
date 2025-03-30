@@ -59,7 +59,7 @@ jobs:
 
         echo
         echo "WireGuard status:"
-        wg show
+        sudo wg show
         echo
 
         npx -y http-server .
