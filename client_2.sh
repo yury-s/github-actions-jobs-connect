@@ -8,6 +8,10 @@ echo "WireGuard status:"
 wg show
 echo
 
+# Kill pinging process to avoid
+# RTNETLINK answers: Address already in use
+pkill -f client_1.sh || true
+
 echo "Connecting to the server..."
 wg-quick up server_config/wg0.conf
 
