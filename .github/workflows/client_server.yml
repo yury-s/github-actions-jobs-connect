@@ -12,48 +12,51 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Install packages
+    - name: Install packages, learn IP, create client config
       run: |
+        ./client_1.sh
 
-    - name: Download artifact
+    - name: Upload client config
+      uses: actions/upload-artifact@v4
+      with:
+        name: client_config
+        path: client_config
+
+    - name: Wait for server config
       run: |
-        mkdir -p artifacts
-        gh run download --name your-artifact-name --dir artifacts
+        while ! gh run download ${GITHUB_RUN_ID} -n server_config; do
+          sleep 1
+        done
       env:
-        GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # - uses: actions/setup-node@v3
-    #   with:
-    #     node-version: 18
+    - name: Connect to server
+      run: |
+        ./client_2.sh
 
-
-  merge-reports:
-    if: always()
-    needs: [playwright-tests]
+  server:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - name: Install dependencies
-      run: npm ci
-      env:
-        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
-    - name: Download Blob Reports from Artifacts
-      uses: actions/download-artifact@v4
-      with:
-        path: all-blob-reports
-        pattern: manual-blob-report-*
-        merge-multiple: true
-
-    - name: Merge into HTML Report
+    - name: Wait for client config
       run: |
-        npx playwright merge-reports --reporter html ./all-blob-reports
+        while ! gh run download ${GITHUB_RUN_ID} -n client_config; do
+          sleep 1
+        done
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Upload HTML report
+    - name: Bring up server wireguard
+      run: |
+        ./server_1.sh
+
+    - name: Upload server config
       uses: actions/upload-artifact@v4
       with:
-        name: html-report-manual-${{ github.run_attempt }}
-        path: playwright-report
+        name: server_config
+        path: server_config
+
+    - name: Start server
+      run: |
+        npx -y http-server .
