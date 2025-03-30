@@ -6,7 +6,7 @@ on:
   # pull_request:
   #   branches: [ main ]
 jobs:
-  client:
+  http_server:
     strategy:
       fail-fast: false
     runs-on: ubuntu-latest
@@ -23,3 +23,35 @@ jobs:
           sleep 0.2
         done
         curl http://localhost:8080/test.html
+
+  reader:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Wait for artifact
+      run: |
+        echo "Waiting for artifact"
+        while ! gh run download ${GITHUB_RUN_ID} -n test.html; do
+          sleep 0.2
+          echo "Waiting for artifact"
+        done
+        echo "Artifact downloaded"
+        ls -l .
+        cat test.html
+
+  writer:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Create artifact
+      run: |
+        echo "Hello, World!" > test.html
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: test.html
+        path: test.html
