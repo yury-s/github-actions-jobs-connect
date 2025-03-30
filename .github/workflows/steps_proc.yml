@@ -40,9 +40,9 @@ jobs:
         mkdir -p downloads
         cd downloads
         echo "Waiting for artifact"
-        while [ ! -f test-artifact ]; do
-          gh run download ${GITHUB_RUN_ID} -n test-artifact || true
+        while ! gh run download ${GITHUB_RUN_ID} -n test-artifact; do
           echo "Waiting for artifact"
+          sleep 1
         done
         echo "Artifact downloaded"
         ls -l .
