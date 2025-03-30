@@ -9,7 +9,6 @@ if [ ! -f client_config/CLIENT_IP_PORT ]; then
 fi
 
 source client_config/CLIENT_IP_PORT
-rm -f client_config/CLIENT_IP_PORT
 
 echo "Client IP address: $CLIENT_IP"
 echo "Client port (after NAT mapping): $CLIENT_PORT"
