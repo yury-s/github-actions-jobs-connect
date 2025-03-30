@@ -3,6 +3,11 @@
 echo "Current interfaces:"
 ip a
 
+echo
+echo "WireGuard status:"
+wg show
+echo
+
 echo "Connecting to the server..."
 wg-quick up server_config/wg0.conf
 

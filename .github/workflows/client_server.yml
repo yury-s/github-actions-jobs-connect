@@ -52,4 +52,14 @@ jobs:
         path: server_config
     - name: Start server
       run: |
+        echo
+        echo "Current interfaces:"
+        ip a
+        echo
+
+        echo
+        echo "WireGuard status:"
+        wg show
+        echo
+
         npx -y http-server .
