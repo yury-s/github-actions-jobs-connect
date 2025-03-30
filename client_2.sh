@@ -18,8 +18,16 @@ while pgrep -f client_1.sh; do
   pkill -f client_1.sh || true
 done
 
+echo "WireGuard config:"
+cat server_config/wg0.conf
+echo
 echo "Connecting to the server..."
 wg-quick up server_config/wg0.conf
+
+echo
+echo "WireGuard status:"
+wg show
+echo
 
 echo "Downloading test page from the server..."
 # Wait for server to be ready
