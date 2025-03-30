@@ -64,8 +64,8 @@ if [[ ! $(echo "$STUN_OUTPUT" | grep 'preserves ports') ]]; then
   (
     echo "> Punching NAT in the background"
     while [ 1 ]; do
-      echo | nc -n -u -p $PORT 3.3.3.3 443
-      sleep 10
+      echo | nc -w 1 -n -u -p $PORT 3.3.3.3 443
+      sleep 1
     done
   ) &
 fi

@@ -18,6 +18,8 @@ while pgrep -f client_1.sh; do
   pkill -f client_1.sh || true
 done
 
+sleep 2
+
 echo "WireGuard config:"
 cat server_config/wg0.conf
 echo
