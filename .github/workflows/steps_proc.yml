@@ -5,6 +5,11 @@ on:
   #   branches: [ main ]
   # pull_request:
   #   branches: [ main ]
+
+concurrency:
+  group: client_server
+  cancel-in-progress: true
+
 jobs:
   http_server:
     strategy:
