@@ -49,7 +49,11 @@ jobs:
       run: |
         URL=http://$(cat server_config/ip.txt):8080/test.html
         echo "URL: $URL"
+        until curl -sSf --connect-timeout 2 $URL >/dev/null; do
+          sleep 0.2
+        done
         curl $URL
+
         traceroute -m 3 -n $(cat server_config/ip.txt)
 
   server:
