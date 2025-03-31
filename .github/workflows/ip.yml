@@ -23,8 +23,17 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
     - name: Trace route
       run: |
-        # Do not resolve hostnames
-        traceroute -m 3 8.8.8.8
+        traceroute -m 3 -w 1 --tries 1 8.8.8.8
+    - name: Wait for server config
+      run: |
+        while ! gh run download ${GITHUB_RUN_ID} -n server_config -D server_config; do
+          sleep 1
+        done
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Traceroute to server
+      run: |
+        traceroute -m 3 -w 1 --tries $(cat server_config/ip.txt)
 
   client:
     strategy:
@@ -53,8 +62,6 @@ jobs:
           sleep 0.2
         done
         curl $URL
-
-        traceroute -m 3 -n $(cat server_config/ip.txt)
 
   server:
     runs-on: ubuntu-latest
