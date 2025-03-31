@@ -33,6 +33,9 @@ jobs:
     strategy:
       fail-fast: false
     runs-on: ubuntu-latest
+    permissions:
+      actions: read  # for downloading artifact
+
     steps:
     - uses: actions/checkout@v4
     - name: Install dependencies
