@@ -32,6 +32,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Print local IP
+      run: |
+        IP=$(ip a | awk '/inet 10/ { split($2, amask, /\//); print amask[1] }')
+        echo "Local IP: $IP"
+        echo
+        ip a
     - name: Wait for server config
       run: |
         while ! gh run download ${GITHUB_RUN_ID} -n server_config -D server_config; do
@@ -41,14 +47,16 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Connect to server
       run: |
-        curl http://$(cat server_config/ip.txt):8080/test.html
+        URL=http://$(cat server_config/ip.txt):8080/test.html
+        echo "URL: $URL"
+        curl $URL
         traceroute -m 3 -n $(cat server_config/ip.txt)
 
   server:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Wait for client config
+    - name: Determine local IP
       run: |
         IP=$(ip a | awk '/inet 10/ { split($2, amask, /\//); print amask[1] }')
         echo "IP: $IP"
