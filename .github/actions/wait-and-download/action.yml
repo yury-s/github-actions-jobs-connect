@@ -14,10 +14,12 @@ runs:
   steps:
     - uses: actions/checkout@v4
     - name: Install dependencies
+      shell: bash
       run: |
         cd download_step
         npm ci
     - name: Wait for artifact and download
+      shell: bash
       run: |
         mkdir -p ${{ inputs.path }}
         echo "Waiting for artifact"
