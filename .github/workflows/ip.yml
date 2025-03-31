@@ -12,6 +12,8 @@ concurrency:
 
 jobs:
   traceroute:
+    strategy:
+      fail-fast: false
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -58,8 +60,15 @@ jobs:
       run: |
         URL=http://$(cat server_config/ip.txt):8080/test.html
         echo "URL: $URL"
+        i=0
         until curl -sSf --connect-timeout 2 $URL >/dev/null; do
           sleep 0.2
+
+          i=$((i+1))
+          if [ $i -gt 10 ]; then
+            echo "Failed to connect to server"
+            exit 1
+          fi
         done
         curl $URL
 
