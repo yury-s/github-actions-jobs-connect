@@ -24,7 +24,7 @@ jobs:
     - name: Trace route
       run: |
         # Do not resolve hostnames
-        traceroute -m 3 -n github.com
+        traceroute -m 3 8.8.8.8
 
   client:
     strategy:
