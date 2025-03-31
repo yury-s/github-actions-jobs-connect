@@ -88,11 +88,10 @@ jobs:
         name: server_config
         path: server_config
     - name: Start server
-      timeout-minutes: 5
       run: |
         echo
         echo "Current interfaces:"
         ip a
         echo
 
-        npx -y http-server .
+        timeout 3m npx -y http-server . || true
