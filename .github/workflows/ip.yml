@@ -1,0 +1,69 @@
+name: Local network IP
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [ main ]
+  # pull_request:
+  #   branches: [ main ]
+
+concurrency:
+  group: client_server
+  cancel-in-progress: true
+
+jobs:
+  traceroute:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install traceroute
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends inetutils-traceroute inetutils-ping
+      env:
+        DEBIAN_FRONTEND: noninteractive
+    - name: Trace route
+      run: |
+        # Do not resolve hostnames
+        traceroute -m 3 -n github.com
+
+  client:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Wait for server config
+      run: |
+        while ! gh run download ${GITHUB_RUN_ID} -n server_config -D server_config; do
+          sleep 1
+        done
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Connect to server
+      run: |
+        curl http://$(cat server_config/ip.txt):8080/test.html
+        traceroute -m 3 -n $(cat server_config/ip.txt)
+
+  server:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Wait for client config
+      run: |
+        IP = $(ip a | awk '/inet 10/ { split($2, amask, /\//); print amask[1] }')
+        echo "IP: $IP"
+        mkdir -p server_config
+        echo $IP > server_config/ip.txt
+    - name: Upload server config
+      uses: actions/upload-artifact@v4
+      with:
+        name: server_config
+        path: server_config
+    - name: Start server
+      run: |
+        echo
+        echo "Current interfaces:"
+        ip a
+        echo
+
+        npx -y http-server .
