@@ -11,5 +11,4 @@ inputs:
     default: '.'
 runs:
   using: "node20"
-  pre: './download_step/setup.mjs'
-  main: './download_step/wait_and_download.mjs'
+  main: '../../../download_step/wait_and_download.mjs'
