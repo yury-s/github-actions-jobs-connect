@@ -11,4 +11,5 @@ inputs:
     default: '.'
 runs:
   using: "node20"
+  # Have to wrap it in an action to make ACTIONS_RUNTIME_TOKEN available.
   main: '../../../download_step/wait_and_download.mjs'
