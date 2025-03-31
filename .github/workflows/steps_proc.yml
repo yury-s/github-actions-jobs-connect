@@ -53,6 +53,8 @@ jobs:
         echo "Artifact downloaded"
         ls -l downloads
         cat downloads/test-artifact
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # - name: Wait for artifact
     #   run: |
