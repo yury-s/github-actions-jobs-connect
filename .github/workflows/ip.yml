@@ -25,7 +25,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
     - name: Trace route
       run: |
-        traceroute -m 3 -w 1 --tries 1 8.8.8.8
+        traceroute -m 3 -w 1 --tries 1 8.8.8.8 || true
     - name: Wait for server config
       run: |
         while ! gh run download ${GITHUB_RUN_ID} -n server_config -D server_config; do
@@ -35,7 +35,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Traceroute to server
       run: |
-        traceroute -m 3 -w 1 --tries $(cat server_config/ip.txt)
+        traceroute -m 3 -w 1 --tries $(cat server_config/ip.txt) || true
 
   client:
     strategy:
