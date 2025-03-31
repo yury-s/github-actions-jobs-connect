@@ -11,23 +11,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  http_server:
-    strategy:
-      fail-fast: false
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Start server
-      run: |
-        echo "Starting HTTP server"
-        npx -y http-server . &
+  # http_server:
+  #   strategy:
+  #     fail-fast: false
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   - name: Start server
+  #     run: |
+  #       echo "Starting HTTP server"
+  #       npx -y http-server . &
 
-    - name: Download file from server
-      run: |
-        until curl -sSf http://localhost:8080 >/dev/null; do
-          sleep 0.2
-        done
-        curl http://localhost:8080/test.html
+  #   - name: Download file from server
+  #     run: |
+  #       until curl -sSf http://localhost:8080 >/dev/null; do
+  #         sleep 0.2
+  #       done
+  #       curl http://localhost:8080/test.html
 
   reader:
     strategy:
@@ -42,19 +42,25 @@ jobs:
       run: |
         cd download_step
         npm ci
-    - name: Wait for artifact and download
-      run: |
-        mkdir -p downloads
-        echo "Waiting for artifact"
-        while ! node download_step/index.mjs test-artifact downloads; do
-          echo "Waiting for artifact"
-          sleep 1
-        done
-        echo "Artifact downloaded"
-        ls -l downloads
-        cat downloads/test-artifact
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Wait for artifact and download action
+      uses: ./.github/actions/wait-and-download
+      with:
+        name: test-artifact
+        path: downloads
+
+    # - name: Wait for artifact and download
+    #   run: |
+    #     mkdir -p downloads
+    #     echo "Waiting for artifact"
+    #     while ! node download_step/index.mjs test-artifact downloads; do
+    #       echo "Waiting for artifact"
+    #       sleep 1
+    #     done
+    #     echo "Artifact downloaded"
+    #     ls -l downloads
+    #     cat downloads/test-artifact
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # - name: Wait for artifact
     #   run: |

@@ -1,0 +1,30 @@
+name: 'Wait and download artifacts'
+description: 'Wait and download artifacts from GitHub'
+inputs:
+  name:
+    description: 'Name of the artifact to download'
+    required: true
+    default: 'name'
+  path:
+    description: 'Path to download artifacts'
+    required: true
+    default: '.'
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        cd download_step
+        npm ci
+    - name: Wait for artifact and download
+      run: |
+        mkdir -p ${{ inputs.path }}
+        echo "Waiting for artifact"
+        while ! node download_step/index.mjs '${{ inputs.name }}' '${{ inputs.path }}'; do
+          echo "Waiting for artifact"
+          sleep 1
+        done
+        echo "Artifact downloaded"
+        ls -l ${{ inputs.path }}
+        cat ${{ inputs.path }}/${{ inputs.name }}
