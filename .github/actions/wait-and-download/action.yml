@@ -10,23 +10,6 @@ inputs:
     required: true
     default: '.'
 runs:
-  using: "composite"
-  steps:
-    - uses: actions/checkout@v4
-    - name: Install dependencies
-      shell: bash
-      run: |
-        cd download_step
-        npm ci
-    - name: Wait for artifact and download
-      shell: bash
-      run: |
-        mkdir -p ${{ inputs.path }}
-        echo "Waiting for artifact"
-        while ! node download_step/index.mjs '${{ inputs.name }}' '${{ inputs.path }}'; do
-          echo "Waiting for artifact"
-          sleep 1
-        done
-        echo "Artifact downloaded"
-        ls -l ${{ inputs.path }}
-        cat ${{ inputs.path }}/${{ inputs.name }}
+  using: "node20"
+  pre: './download_step/setup.mjs'
+  main: './download_step/wait_and_download.mjs'
