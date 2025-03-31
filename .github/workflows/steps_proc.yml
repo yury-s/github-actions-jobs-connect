@@ -35,20 +35,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Wait for artifact
+    - name: Install dependencies
+      run: |
+        cd download_step
+        npm ci
+    - name: Wait for artifact and download
       run: |
         mkdir -p downloads
-        cd downloads
         echo "Waiting for artifact"
-        while ! gh run download ${GITHUB_RUN_ID} -n test-artifact; do
+        while ! node download_step/index.mjs test-artifact downloads; do
           echo "Waiting for artifact"
           sleep 1
         done
         echo "Artifact downloaded"
-        ls -l .
-        cat test-artifact
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        ls -l downloads
+        cat downloads/test-artifact
+
+    # - name: Wait for artifact
+    #   run: |
+    #     mkdir -p downloads
+    #     cd downloads
+    #     echo "Waiting for artifact"
+    #     while ! gh run download ${GITHUB_RUN_ID} -n test-artifact; do
+    #       echo "Waiting for artifact"
+    #       sleep 1
+    #     done
+    #     echo "Artifact downloaded"
+    #     ls -l .
+    #     cat test-artifact
+    #   env:
+    #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Download artifact with action
       uses: actions/download-artifact@v4
       with:
